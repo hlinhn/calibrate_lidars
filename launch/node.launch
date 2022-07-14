@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="gdb" default="false" />
+  <arg name="callgrind" default="false" />
+
+  <arg if="$(arg gdb)" name="prefix" value="gdb -ex run --args" />
+  <arg if="$(arg callgrind)" name="prefix" value="valgrind --tool=callgrind --instr-atstart=no" />
+  <param if="$(arg callgrind)" name="/bond_disable_heartbeat_timeout" value="true" />
+  <arg if="$(eval not callgrind and not gdb)" name="prefix" value="" />
+
+  <node name="calibrate_lidars" pkg="calibrate_lidars" type="calibrate_lidars" launch-prefix="$(arg prefix)" output="screen">
+    <!-- <rosparam file="$(arg file_path)" command="load" /> -->
+    <!-- <param name="single_overwriting_parameter" value="value" /> -->
+    <param name="correct" value="true"/>
+    <remap from="calibrate_lidars/cloud" to="/sensors/lidar/left_top/point_cloud_raw" />
+    <remap from="calibrate_lidars/front_cloud" to="/sensors/lidar/front_top/point_cloud_raw" />
+    <remap from="calibrate_lidars/rotation" to="/donner_articulated_drive_controller/steering_angle" />
+
+    <remap from="calibrate_lidars/fixed_cloud" to="/sensors/lidar/rear_top/point_cloud_raw" />
+    <remap from="calibrate_lidars/var_cloud" to="/sensors/lidar/left_top/point_cloud_raw" />
+  </node>
+  <include file="$(find donner_description)/launch/donner_description.launch.xml"/>
+  <node pkg="robot_state_publisher" type="robot_state_publisher" name="donner_state"/>
+
+</launch>
