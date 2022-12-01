@@ -299,7 +299,7 @@ calibrate_lidars::Node::singleCallback(const sensor_msgs::PointCloud2::ConstPtr&
     first_ = true;
     return;
   }
-  to Cloud::Ptr cloud_filtered(new Cloud());
+  auto cloud_filtered(new Cloud());
   pcl::VoxelGrid<Point> sor;
   sor.setInputCloud(aggregated_);
   sor.setLeafSize(0.05f, 0.05f, 0.05f);
